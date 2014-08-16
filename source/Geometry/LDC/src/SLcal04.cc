@@ -43,7 +43,7 @@ G4bool SLcal04::PreLoadScriptAction(Database* dbtmp,
 {
   G4String query;
 
-  G4cout << G4endl <<"SLcal04 - the LumiCal super driver v1.1" << G4endl;
+  G4cout << G4endl <<"SLcal04 - the LumiCal super driver for CEPC" << G4endl;
   G4String dbName = theEnv.GetDBName() ;
   G4cout << " Database name : " << dbName << G4endl ;
 
@@ -111,8 +111,6 @@ G4bool SLcal04::PreLoadScriptAction(Database* dbtmp,
   dbtmp->exec(query.data());
   // make z_end position of LCAL aligned with ECAL endcup zmax if ECAL was build already;
  
-  G4double  Ecal_endcap_zmax = theEnv.GetParameterAsDouble("Ecal_endcap_zmax");
-  G4double  Ecal_endcap_zmin = theEnv.GetParameterAsDouble("Ecal_endcap_zmin");
   G4double  Lcal_length = (
                 + theEnv.GetParameterAsDouble("Lcal_tungsten_thickness")
                 + theEnv.GetParameterAsDouble("Lcal_support_thickness")
@@ -123,34 +121,13 @@ G4bool SLcal04::PreLoadScriptAction(Database* dbtmp,
   std::ostringstream oss_lcalL;
 
   oss_lcalL <<  Lcal_length;
- (*Control::globalModelParameters)["Lcal_z_thickness"] =  oss_lcalL.str(); 
+  (*Control::globalModelParameters)["Lcal_z_thickness"] =  oss_lcalL.str(); 
 
- G4double z_begin = 1900;//Ecal_endcap_zmax - Lcal_length ;
-   std::ostringstream oss_lcal_zmin ;
-   oss_lcal_zmin <<  z_begin ; 
-
- if ( (int)Ecal_endcap_zmin  )  {
-   // we need to put the lcal inside the tracking region, so we commented
-   // out the following assert.
-   //   assert ( z_begin >= Ecal_endcap_zmin );
-   query = "UPDATE lumical SET z_begin =" + oss_lcal_zmin.str() + ";";
-   dbtmp -> exec(query.data());
-   (*Control::globalModelParameters)["Lcal_z_begin"] =  oss_lcal_zmin.str();
-    G4cout << " Lcal_z_begin updated from " << theEnv.GetParameterAsString("Lcal_z_begin") 
-        << " to " <<  oss_lcal_zmin.str() << " [ mm ] " << G4endl;
- }
- else {
-    G4cout << " WARNING : Lcal_z_begin updated from " << theEnv.GetParameterAsString("Lcal_z_begin") 
-           << " to " <<  oss_lcal_zmin.str() << " [ mm ] "
-           << " Make sure You know what You are doing ! " 
-           << G4endl;
-
-    (*Control::globalModelParameters)["Lcal_z_begin"] =  oss_lcal_zmin.str();
-      std::ostringstream oss_Ecalz ;
-      oss_Ecalz <<  z_begin + Lcal_length ; 
-    (*Control::globalModelParameters)["Ecal_endcap_zmax"] =  oss_Ecalz.str();
-
- };
+  G4double z_begin = theEnv.GetParameterAsDouble("Lcal_z_begin");
+  std::ostringstream oss_lcal_zmin ;
+  oss_lcal_zmin <<  z_begin ; 
+  
+  G4cout << "Lcal z begin from " << z_begin << "." << G4endl;
 
   G4double  Ecal_endcap_plug_rmin = theEnv.GetParameterAsDouble("Ecal_endcap_plug_rmin");
   if ( (int)Ecal_endcap_plug_rmin ) {

@@ -81,7 +81,7 @@
 // - FTD_SS_cepc0: remove the outer two disks to enable the placement of a new detector part
 //   Xun Chen (Aug 2014)
 
-#define DEBUG_VALUES 1
+//#define DEBUG_VALUES 1
 
 #include<map>
 #include<vector>
